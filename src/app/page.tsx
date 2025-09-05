@@ -1,103 +1,116 @@
-import Image from "next/image";
+"use client";
+
+import { useRef, useState } from "react";
+import { QRCodeCanvas } from "qrcode.react";
+
+// Default dummy logo (embedded SVG as a data URL)
+const logoDataUrl =
+  "data:image/svg+xml;utf8," +
+  encodeURIComponent(`
+  <svg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'>
+    <defs>
+      <radialGradient id='g' cx='50%' cy='50%' r='50%'>
+        <stop offset='0%' stop-color='#60a5fa'/>
+        <stop offset='100%' stop-color='#2563eb'/>
+      </radialGradient>
+    </defs>
+    <rect width='96' height='96' rx='20' fill='url(#g)'/>
+    <text x='50%' y='54%' dominant-baseline='middle' text-anchor='middle' font-family='Inter, Arial, sans-serif' font-size='28' font-weight='700' fill='white'>LOGO</text>
+  </svg>
+`);
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [url, setUrl] = useState("https://example.com");
+  const [logoSrc, setLogoSrc] = useState(logoDataUrl);
+  const canvasRef = useRef(null);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const downloadPng = () => {
+    const canvas = canvasRef.current?.querySelector("canvas");
+    if (!canvas) return;
+    const link = document.createElement("a");
+    link.download = "qr.png";
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  };
+
+  const onLogoPick = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => setLogoSrc(reader.result);
+    reader.readAsDataURL(file);
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+      <div className="w-full max-w-2xl">
+        <div className="mb-6 text-center">
+          <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">QR Generator with Center Logo</h1>
+          <p className="text-gray-600 mt-2">Scans/opens to your URL. Click the QR to open as well.</p>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+        <div className="grid md:grid-cols-2 gap-6">
+          {/* Controls */}
+          <div className="bg-white rounded-2xl shadow p-5 space-y-4">
+            <label className="block text-sm font-medium text-gray-700">Destination URL</label>
+            <input
+              type="url"
+              className="w-full rounded-xl border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              placeholder="https://your-site.com/page"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+            />
+
+            <div className="pt-2">
+              <label className="block text-sm font-medium text-gray-700">Center logo (optional)</label>
+              <input type="file" accept="image/*" onChange={onLogoPick} className="mt-1" />
+              <p className="text-xs text-gray-500 mt-1">Keeps a small image in the center of the QR. Defaults to a dummy logo.</p>
+            </div>
+
+            <div className="flex gap-3 pt-4">
+              <button
+                onClick={downloadPng}
+                className="rounded-2xl bg-indigo-600 text-white px-4 py-2 shadow hover:bg-indigo-700 transition"
+              >
+                Download PNG
+              </button>
+              <a
+                href={url || "#"}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-2xl border border-gray-300 px-4 py-2 hover:bg-gray-100 transition"
+              >
+                Open URL
+              </a>
+            </div>
+          </div>
+
+          {/* QR Preview */}
+          <div className="bg-white rounded-2xl shadow p-5 flex flex-col items-center justify-center">
+            <a href={url || "#"} target="_blank" rel="noreferrer" ref={canvasRef} className="group">
+              <QRCodeCanvas
+                value={url || ""}
+                size={280}
+                level="H" // high error correction so logo doesn't break it
+                includeMargin={true}
+                imageSettings={{
+                  src: logoSrc,
+                  height: 56,
+                  width: 56,
+                  excavate: true, // cut out the background under the logo
+                }}
+              />
+              <div className="text-center text-sm text-gray-500 mt-3 group-hover:underline">
+                Click the QR to open the URL
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <div className="text-center text-xs text-gray-500 mt-6">
+          Tip: Keep your logo under ~20% of the QR size and use error correction level "H" for best scan reliability.
+        </div>
+      </div>
     </div>
   );
 }
