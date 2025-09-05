@@ -66,9 +66,7 @@ export default function Home() {
             />
 
             <div className="pt-2">
-              <label className="block text-sm font-medium text-gray-700">Center logo (optional)</label>
-              <input type="file" accept="image/*" onChange={onLogoPick} className="mt-1" />
-              <p className="text-xs text-gray-500 mt-1">Keeps a small image in the center of the QR. Defaults to a dummy logo.</p>
+              <input type="file" accept="image/*" onChange={onLogoPick} className="mt-1 cursor-pointer" />
             </div>
 
             <div className="flex gap-3 pt-4">
@@ -104,9 +102,7 @@ export default function Home() {
                   excavate: true, // cut out the background under the logo
                 }}
               />
-              <div className="text-center text-sm text-gray-500 mt-3 group-hover:underline">
-                Click the QR to open the URL
-              </div>
+             
             </a>
           </div>
         </div>
