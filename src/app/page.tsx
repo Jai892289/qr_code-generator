@@ -33,7 +33,7 @@ export default function Home() {
     link.click();
   };
 
-  const onLogoPick = (e:any) => {
+  const onLogoPick = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
@@ -111,9 +111,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="text-center text-xs text-gray-500 mt-6">
-          Tip: Keep your logo under ~20% of the QR size and use error correction level "H" for best scan reliability.
-        </div>
+      
       </div>
     </div>
   );
