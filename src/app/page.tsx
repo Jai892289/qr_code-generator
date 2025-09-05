@@ -22,7 +22,7 @@ const logoDataUrl =
 export default function Home() {
   const [url, setUrl] = useState("https://example.com");
   const [logoSrc, setLogoSrc] = useState(logoDataUrl);
-  const canvasRef = useRef(null);
+  const canvasRef = useRef<HTMLAnchorElement>(null);
 
   const downloadPng = () => {
     const canvas = canvasRef.current?.querySelector("canvas");
@@ -33,11 +33,15 @@ export default function Home() {
     link.click();
   };
 
-  const onLogoPick = (e) => {
+  const onLogoPick = (e:any) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = () => setLogoSrc(reader.result);
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        setLogoSrc(reader.result);
+      }
+    };
     reader.readAsDataURL(file);
   };
 
